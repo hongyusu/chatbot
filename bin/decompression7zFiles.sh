@@ -16,3 +16,9 @@ for filename in ./*7z; do
 done
 
 cd $currentdir
+
+
+
+
+
+
