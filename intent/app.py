@@ -34,10 +34,14 @@ def action1(name=None):
     res['status'] = 0
     res['items'] = []
     res['scores'] = []
-    res['meanscore'] = 0
+    tmpScore = 0
     for key in intent.keys():
         res['items'].append("  " + key)
         res['scores'].append(intent[key])
+        if intent[key] > tmpScore:
+            tmpScore = intent[key]
+            tmpKey = key
+    res['meanscore'] = key
     print res
     return flask.jsonify(res)
     

@@ -114,7 +114,8 @@ $(document).ready(function(){
 				data: JSON.stringify(action1Data),
 				dataType:'json',
 				success: function(d){
-					$('#action1Meanscore').html(d['meanscore'].toFixed(3));
+					//$('#action1Meanscore').html(d['meanscore'].toFixed(3));
+					$('#action1Meanscore').html(d['meanscore']);
 					var rows = [];
 					if(d['status'] == 0){
 						$.each(d['items'], function(i, item){

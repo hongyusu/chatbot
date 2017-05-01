@@ -31,7 +31,7 @@ Predicting intent based on input questions
   }
   
   input.box{
-  width: 25%!important;
+  width: 200px;
   margin-right: 20px;
   }
 
@@ -60,6 +60,10 @@ Predicting intent based on input questions
   padding-right: 20px;
   }
 
+  input[type="text"]{
+      width: 500px;
+      height: 50px;
+  }
 
 	table {
 	  border-collapse: collapse;
@@ -86,7 +90,7 @@ Predicting intent based on input questions
 
 {% block content %}
 <div class="starter-template">
-  <h1><center>Chatbot - Intent Analysis</center></h1>
+  <h1><center>Chatbot - Intent Prediction</center></h1>
   <p class="lead"></p>
 </div>
 
@@ -104,7 +108,7 @@ Predicting intent based on input questions
 
 <div id="" class="text-center">
     <div class="starter-template">
-        <h4>Mean score</h4>
+        <h4>Intent with high probability</h4>
         <div id="action1Meanscore"></div>
     </div>
 </div>
