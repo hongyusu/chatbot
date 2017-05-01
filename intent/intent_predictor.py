@@ -466,12 +466,12 @@ def predict_lines(lines):
 
 if __name__ == '__main__':
     #preprocessing()
-    #learning()
+    learning()
 
     #predict_validation()
 
     # read in test file
-    with open("test.txt") as f:
+    with open("test.dat") as f:
         lines = f.readlines()
     print predict_lines(lines)
 
