@@ -476,7 +476,7 @@ if __name__ == '__main__':
     #print predict_lines(lines)
 
     #print predict_line("that is a cat.")
-    print predict_line(sys.argv[1])
+    #print predict_line(sys.argv[1])
 
 
 
