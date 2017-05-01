@@ -1,0 +1,11 @@
+data/
+venv
+*.pyc
+*.pem
+*~
+*.h5
+*.json
+*.dat
+*.pickle
+
+
