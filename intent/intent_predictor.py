@@ -348,10 +348,10 @@ def learning():
     # save model and weight
     # save model
     model_json = model.to_json()
-    with open("model_cnn_sentiment.json", "w") as json_file:
+    with open("model_cnn_intent.json", "w") as json_file:
         json_file.write(model_json)
     # save model weight
-    model.save_weights('model_cnn_sentiment.h5')
+    model.save_weights('model_cnn_intent.h5')
 
     print("Saved model to disk")
 
@@ -401,15 +401,15 @@ def predict_validation():
     '''
     print "validation"
     # load json and create model
-    with open('model_cnn_sentiment.json', 'r') as json_file:
+    with open('model_cnn_intent.json', 'r') as json_file:
         loaded_model_json = json_file.read()
     model = model_from_json(loaded_model_json)
-    model.load_weights("model_cnn_sentiment.h5")
+    model.load_weights("model_cnn_intent.h5")
     opt = Adadelta(lr=1.0, rho=0.95, epsilon=1e-6)
     model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
 
     #
-    x = cPickle.load(open("imdb-train-val-test.pickle", "rb"))
+    x = cPickle.load(open("train-val-test.pickle", "rb"))
     revs, W, word_index_map, vocab = x[0], x[1], x[2], x[3]
 
     lines = []
@@ -429,13 +429,13 @@ def predict_line(line):
     """
     print "predict a line"
     # read in index
-    word_index_map = cPickle.load(open("imdb-word-index-map.pickle", "rb"))
+    word_index_map = cPickle.load(open("word-index-map.pickle", "rb"))
 
     # load model and parameters from file
-    with open('model_cnn_sentiment.json', 'r') as json_file:
+    with open('model_cnn_intent.json', 'r') as json_file:
         loaded_model_json = json_file.read()
     model = model_from_json(loaded_model_json)
-    model.load_weights("model_cnn_sentiment.h5")
+    model.load_weights("model_cnn_intent.h5")
     opt = Adadelta(lr=1.0, rho=0.95, epsilon=1e-6)
     model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
 
@@ -449,13 +449,13 @@ def predict_lines(lines):
     """
     print "predict lines"
     # read in index
-    word_index_map = cPickle.load(open("imdb-word-index-map.pickle", "rb"))
+    word_index_map = cPickle.load(open("word-index-map.pickle", "rb"))
 
     # load model and parameters from file
-    with open('model_cnn_sentiment.json', 'r') as json_file:
+    with open('model_cnn_intent.json', 'r') as json_file:
         loaded_model_json = json_file.read()
     model = model_from_json(loaded_model_json)
-    model.load_weights("model_cnn_sentiment.h5")
+    model.load_weights("model_cnn_intent.h5")
     opt = Adadelta(lr=1.0, rho=0.95, epsilon=1e-6)
     model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
 
@@ -466,14 +466,14 @@ def predict_lines(lines):
 
 if __name__ == '__main__':
     #preprocessing()
-    learning()
+    #learning()
 
     #predict_validation()
 
     # read in test file
-    #with open("test.txt") as f:
-    #    lines = f.readlines()
-    #print predict_lines(lines)
+    with open("test.txt") as f:
+        lines = f.readlines()
+    print predict_lines(lines)
 
     #print predict_line("that is a cat.")
 
