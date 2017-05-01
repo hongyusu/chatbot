@@ -26,7 +26,8 @@ from tensorflow.python.ops import control_flow_ops
 
 tf.python.control_flow_ops = control_flow_ops
 
-datamap = {"3dprinting":"0","ai":"1","anime":"2","chess":"3","coffee":"4","economics":"5","fitness":"6","health":"7","law":"8","pets":"9","sports":"10"}
+w2vBin = '/Users/hongyusu/Data/GoogleNews-vectors-negative300.bin'
+datamap = {"3dprinting" : "0", "ai" : "1", "anime" : "2", "arduino" : "3", "astronomy" : "4", "aviation" : "5", "beer" : "6", "chess" : "7", "coffee" : "8", "datascience" : "9", "earthscience" : "10", "economics" : "11", "fitness" : "12", "health" : "13", "law" : "14", "outdoors" : "15", "pets" : "16", "poker" : "17", "robotics" : "18", "sports" : "19", "travel" : "20"}
 
 def get_clean_string(string):
     '''
@@ -192,12 +193,10 @@ def preprocessing():
     '''
     preprocessing traning data, testing data, v2w embedding
     '''
-
     # Read and load data
-    data_train  = pd.read_csv('../data/stackoverflowdata/sample', sep='\t')
-    data_test   = pd.read_csv('../data/stackoverflowdata/sample', sep='\t')
+    data_train  = pd.read_csv('../data/processed/stackexchange/train.dat', sep='\t')
+    data_test   = pd.read_csv('../data/processed/stackexchange/test.dat', sep='\t')
     revs, vocab = generate_data_train_test(data_train, "sentence", "intent", data_test, "sentence", train_ratio=0.8, get_clean_stringing=True)
-
     max_l = np.max(pd.DataFrame(revs)['num_words'])
     print 'data loaded!'
     print 'number of sentences: ' + str(len(revs))
@@ -206,8 +205,7 @@ def preprocessing():
     print 'loading word2vec vectors...',
     
     # Load Google w2v file
-    w2v = load_google_w2v('/Users/hongyusu/Data/GoogleNews-vectors-negative300.bin', vocab)
-
+    w2v = load_google_w2v(w2vBin, vocab)
     print 'word2vec loaded!'
     print 'num words already in word2vec: ' + str(len(w2v))
 
@@ -216,8 +214,8 @@ def preprocessing():
     W, word_index_map = get_W(w2v)
 
     # save dataset
-    cPickle.dump([revs, W, word_index_map, vocab], open('train-val-test.pickle', 'wb'))
-    cPickle.dump(word_index_map, open('word-index-map.pickle', 'wb'))
+    cPickle.dump([revs, W, word_index_map, vocab], open('../data/processed/stackexchange/train-val-test.pickle', 'wb'))
+    cPickle.dump(word_index_map, open('../data/processed/stackexchange/word-index-map.pickle', 'wb'))
     print 'dataset created!'
 
 
@@ -465,15 +463,14 @@ def predict_lines(lines):
 
 
 if __name__ == '__main__':
-    #preprocessing()
-    learning()
+    preprocessing()
+    #learning()
 
     #predict_validation()
 
     # read in test file
-    with open("test.dat") as f:
-        lines = f.readlines()
-    print predict_lines(lines)
+    #with open("test.dat") as f: lines = f.readlines()
+    #print predict_lines(lines)
 
     #print predict_line("that is a cat.")
 
