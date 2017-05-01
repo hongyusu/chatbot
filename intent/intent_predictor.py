@@ -29,8 +29,11 @@ tf.python.control_flow_ops = control_flow_ops
 
 w2vBin = '/Users/hongyusu/Data/GoogleNews-vectors-negative300.bin'
 datamap = {"3dprinting" : "0", "ai" : "1", "anime" : "2", "arduino" : "3", "astronomy" : "4", "aviation" : "5", "beer" : "6", "chess" : "7", "coffee" : "8", "datascience" : "9", "earthscience" : "10", "economics" : "11", "fitness" : "12", "health" : "13", "law" : "14", "outdoors" : "15", "pets" : "16", "poker" : "17", "robotics" : "18", "sports" : "19", "travel" : "20"}
+datamapname = ["3dprinting", "ai", "anime", "arduino", "astronomy", "aviation", "beer", "chess", "coffee", "datascience", "earthscience", "economics", "fitness", "health", "law", "outdoors", "pets", "poker", "robotics", "sports", "travel"]
 classNum = 21
+
 #datamap = {"3dprinting" : "0", "ai" : "1"}
+#datamapname = ["3dprinting", "ai"]
 #classNum = 2
 
 def get_clean_string(string):
@@ -440,7 +443,15 @@ def predict_line(line):
     model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
 
     # make prediction
-    return predict_given_sentence(line,word_index_map,model)
+    output = predict_given_sentence(line,word_index_map,model)
+    
+    res = {}
+    index = 0
+    for className in datamapname:
+        print("%10s\t%.2f%%" % (className, output[0][index]*100))
+        res[className] = output[0][index]
+        index += 1
+    return [res] 
 
 # wrapper
 def predict_lines(lines):
@@ -460,22 +471,32 @@ def predict_lines(lines):
     model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
 
     # make prediction
-    output = predict_given_sentences(lines,word_index_map,model)
-    return output
+    outputs = predict_given_sentences(lines,word_index_map,model)
+    results = []
+    res = {}
+    for output in outputs:
+        index = 0
+        for className in datamapname:
+            print("%10s\t%.2f%%" % (className, output[index]*100))
+            res[className] = output[index]
+            index += 1
+        results.append(res)
+
+    return results 
 
 
 if __name__ == '__main__':
 
-    preprocessing()
+    #preprocessing()
     #learning()
 
     #predict_validation()
 
     # read in test file
-    #with open("test.dat") as f: lines = f.readlines()
-    #print predict_lines(lines)
+    with open("test.dat") as f: lines = f.readlines()
+    print predict_lines(lines)
 
-    #print predict_line("that is a cat.")
+    print predict_line("that is a cat.")
     #print predict_line(sys.argv[1])
 
 
