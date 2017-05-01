@@ -14,9 +14,9 @@ def processing(inputFilename, topic, fout_train, fout_test):
             n += 1
             try:
                 if n % 100 == 0:
-                    fout_train.write('"%s"\t"%s"\t"%s"\n' % (c1.get('Id'), topic, re.sub('"', "", c1.get('Title').encode('ascii','ignore').decode('ascii'))))
-                else:
                     fout_test.write('"%s"\t"%s"\t"%s"\n' % (c1.get('Id'), topic, re.sub('"', "", c1.get('Title').encode('ascii','ignore').decode('ascii'))))
+                else:
+                    fout_train.write('"%s"\t"%s"\t"%s"\n' % (c1.get('Id'), topic, re.sub('"', "", c1.get('Title').encode('ascii','ignore').decode('ascii'))))
             except:
                 print c1.get('Id'), topic, c1.get('Title')
 

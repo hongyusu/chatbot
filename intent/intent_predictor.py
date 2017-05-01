@@ -461,8 +461,8 @@ def predict_lines(lines):
 
 
 if __name__ == '__main__':
-    #preprocessing()
-    learning()
+    preprocessing()
+    #learning()
 
     #predict_validation()
 
