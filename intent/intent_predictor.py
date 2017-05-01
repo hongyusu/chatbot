@@ -5,6 +5,7 @@
 #---------------
 
 import os
+import sys
 import time
 import numpy as np
 import pandas as pd
@@ -28,6 +29,9 @@ tf.python.control_flow_ops = control_flow_ops
 
 w2vBin = '/Users/hongyusu/Data/GoogleNews-vectors-negative300.bin'
 datamap = {"3dprinting" : "0", "ai" : "1", "anime" : "2", "arduino" : "3", "astronomy" : "4", "aviation" : "5", "beer" : "6", "chess" : "7", "coffee" : "8", "datascience" : "9", "earthscience" : "10", "economics" : "11", "fitness" : "12", "health" : "13", "law" : "14", "outdoors" : "15", "pets" : "16", "poker" : "17", "robotics" : "18", "sports" : "19", "travel" : "20"}
+classNum = 21
+#datamap = {"3dprinting" : "0", "ai" : "1"}
+#classNum = 2
 
 def get_clean_string(string):
     '''
@@ -47,7 +51,7 @@ def get_clean_string(string):
     string = re.sub(r"\s{2,}", " ", string)    
     return string.strip().lower()
 
-def generate_data_train_test(data_train, f1, f2, data_test, f3, train_ratio = 0.8, get_clean_stringing=True):
+def generate_data_train_test(data_train, f1, f2, data_test, f3, train_ratio = 0.8, get_clean_string_flag = True):
     """
     generate data for training (training/test) and test
     """
@@ -55,14 +59,15 @@ def generate_data_train_test(data_train, f1, f2, data_test, f3, train_ratio = 0.
     vocab = defaultdict(float)
     # Pre-process train data set
     trainingsize = data_train.shape[0]  
-    #trainingsize = 100
     for i in xrange(trainingsize):
         line = data_train[f1][i]
-        y    = datamap[data_train[f2][i]]
-        #y    = data_train[f2][i]
+        try:
+            y = datamap[data_train[f2][i]]
+        except:
+            continue
         rev  = []
         rev.append(line.strip())
-        if get_clean_stringing:
+        if get_clean_string_flag:
             orig_rev = get_clean_string(' '.join(rev))
         else:
             orig_rev = ' '.join(rev).lower()
@@ -77,12 +82,11 @@ def generate_data_train_test(data_train, f1, f2, data_test, f3, train_ratio = 0.
         
     # Pre-process test data set
     testsize = data_test.shape[0]  
-    #testsize = 100
     for i in xrange(testsize):
         line = data_test[f3][i]
         rev = []
         rev.append(line.strip())
-        if get_clean_stringing:
+        if get_clean_string_flag:
             orig_rev = get_clean_string(' '.join(rev))
         else:
             orig_rev = ' '.join(rev).lower()
@@ -196,7 +200,7 @@ def preprocessing():
     # Read and load data
     data_train  = pd.read_csv('../data/processed/stackexchange/train.dat', sep='\t')
     data_test   = pd.read_csv('../data/processed/stackexchange/test.dat', sep='\t')
-    revs, vocab = generate_data_train_test(data_train, "sentence", "intent", data_test, "sentence", train_ratio=0.8, get_clean_stringing=True)
+    revs, vocab = generate_data_train_test(data_train, "sentence", "intent", data_test, "sentence", train_ratio=0.8, get_clean_string_flag = True)
     max_l = np.max(pd.DataFrame(revs)['num_words'])
     print 'data loaded!'
     print 'number of sentences: ' + str(len(revs))
@@ -214,8 +218,8 @@ def preprocessing():
     W, word_index_map = get_W(w2v)
 
     # save dataset
-    cPickle.dump([revs, W, word_index_map, vocab], open('../data/processed/stackexchange/train-val-test.pickle', 'wb'))
-    cPickle.dump(word_index_map, open('../data/processed/stackexchange/word-index-map.pickle', 'wb'))
+    cPickle.dump([revs, W, word_index_map, vocab], open('../data/processed/stackexchange/train-val-test-%d.pickle' % classNum, 'wb'))
+    cPickle.dump(word_index_map, open('../data/processed/stackexchange/word-index-map-%d.pickle' % classNum, 'wb'))
     print 'dataset created!'
 
 
@@ -226,7 +230,7 @@ def learning():
     learning with CNN 
     '''
     print "loading data..."
-    x = cPickle.load(open("../data/processed/stackexchange/train-val-test.pickle", "rb"))
+    x = cPickle.load(open("../data/processed/stackexchange/train-val-test-%d.pickle" % classNum, "rb"))
     revs, W, word_index_map, vocab = x[0], x[1], x[2], x[3]
     print "data loaded!"
     datasets = make_index_data(revs, word_index_map, max_l=50, kernel_size=5)
@@ -235,7 +239,7 @@ def learning():
     N = datasets[0].shape[0]
     conv_input_width = W.shape[1]
     conv_input_height = int(datasets[0].shape[1]-1)
-    sizeY = 21 
+    sizeY = classNum 
 
     # For each word write a word index (not vector) to X tensor
     train_X = np.zeros((N, conv_input_height), dtype=np.int)
@@ -305,7 +309,7 @@ def learning():
     model.add(Dropout(1))
 
     # Inner Product layer (as in regular neural network, but without non-linear activation function)
-    model.add(Dense(21))
+    model.add(Dense(classNum))
 
     # SoftMax activation; actually, Dense+SoftMax works as Multinomial Logistic Regression
     model.add(Activation('softmax'))
@@ -405,7 +409,7 @@ def predict_validation():
     model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
 
     #
-    x = cPickle.load(open("../data/processed/stackexchange/train-val-test.pickle", "rb"))
+    x = cPickle.load(open("../data/processed/stackexchange/train-val-test-%d.pickle" % classNum, "rb"))
     revs, W, word_index_map, vocab = x[0], x[1], x[2], x[3]
 
     lines = []
@@ -425,7 +429,7 @@ def predict_line(line):
     """
     print "predict a line"
     # read in index
-    word_index_map = cPickle.load(open("../data/processed/stackexchange/word-index-map.pickle", "rb"))
+    word_index_map = cPickle.load(open("../data/processed/stackexchange/word-index-map-%d.pickle" % classNum, "rb"))
 
     # load model and parameters from file
     with open('../data/model/stackexchange/model_cnn_intent.json', 'r') as json_file:
@@ -445,7 +449,7 @@ def predict_lines(lines):
     """
     print "predict lines"
     # read in index
-    word_index_map = cPickle.load(open("../data/processed/stackexchange/word-index-map.pickle", "rb"))
+    word_index_map = cPickle.load(open("../data/processed/stackexchange/word-index-map-%d.pickle" % classNum, "rb"))
 
     # load model and parameters from file
     with open('../data/model/stackexchange/model_cnn_intent.json', 'r') as json_file:
@@ -461,8 +465,9 @@ def predict_lines(lines):
 
 
 if __name__ == '__main__':
-    #preprocessing()
-    learning()
+
+    preprocessing()
+    #learning()
 
     #predict_validation()
 
@@ -471,6 +476,7 @@ if __name__ == '__main__':
     #print predict_lines(lines)
 
     #print predict_line("that is a cat.")
+    print predict_line(sys.argv[1])
 
 
 
