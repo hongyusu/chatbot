@@ -32,9 +32,9 @@ datamap = {"3dprinting" : "0", "ai" : "1", "anime" : "2", "arduino" : "3", "astr
 datamapname = ["3dprinting", "ai", "anime", "arduino", "astronomy", "aviation", "beer", "chess", "coffee", "datascience", "earthscience", "economics", "fitness", "health", "law", "outdoors", "pets", "poker", "robotics", "sports", "travel"]
 classNum = 21
 
-#datamap = {"3dprinting" : "0", "ai" : "1"}
-#datamapname = ["3dprinting", "ai"]
-#classNum = 2
+datamap = {"3dprinting" : "0", "ai" : "1"}
+datamapname = ["3dprinting", "ai"]
+classNum = 2
 
 def get_clean_string(string):
     '''
@@ -493,8 +493,8 @@ if __name__ == '__main__':
     #predict_validation()
 
     # read in test file
-    with open("test.dat") as f: lines = f.readlines()
-    print predict_lines(lines)
+    #with open("test.dat") as f: lines = f.readlines()
+    #print predict_lines(lines)
 
     print predict_line("that is a cat.")
     #print predict_line(sys.argv[1])
