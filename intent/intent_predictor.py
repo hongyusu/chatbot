@@ -149,7 +149,7 @@ def get_W(word_vecs, k=300):
 
 
 
-def make_index_data(revs, word_index_map, max_l=100, kernel_size=5):
+def make_index_data(revs, word_index_map, max_l=50, kernel_size=5):
     """
     Transforms sentences into a 2-d matrix.
     """
@@ -229,7 +229,7 @@ def learning():
     x = cPickle.load(open("../data/processed/stackexchange/train-val-test.pickle", "rb"))
     revs, W, word_index_map, vocab = x[0], x[1], x[2], x[3]
     print "data loaded!"
-    datasets = make_index_data(revs, word_index_map, max_l=100, kernel_size=5)
+    datasets = make_index_data(revs, word_index_map, max_l=50, kernel_size=5)
 
     # Train data preparation
     N = datasets[0].shape[0]
@@ -361,7 +361,7 @@ def predict_given_sentences(lines,word_index_map,model):
     2. word index map
     3. model
     """
-    max_l=100
+    max_l=50
 
     # form dataset
     data = []
@@ -381,7 +381,7 @@ def predict_given_sentence(line,word_index_map,model):
     2. word index map
     3. model
     """
-    max_l=100
+    max_l=50
     # form dataset
     data = np.asarray( [get_index_from_sent(line,word_index_map,max_l,kernel_size=5)] )
     data = data[:,1:max_l]
@@ -461,8 +461,8 @@ def predict_lines(lines):
 
 
 if __name__ == '__main__':
-    preprocessing()
-    #learning()
+    #preprocessing()
+    learning()
 
     #predict_validation()
 
