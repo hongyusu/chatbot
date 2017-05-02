@@ -13,10 +13,9 @@ def processing(inputFilename, topic, fout_train, fout_test):
         if c1.get('PostTypeId') == "1":
             n += 1
             try:
+                fout_train.write('"%s"\t"%s"\t"%s"\n' % (c1.get('Id'), topic, re.sub('"', "", c1.get('Title').encode('ascii','ignore').decode('ascii'))))
                 if n % 100 == 0:
                     fout_test.write('"%s"\t"%s"\t"%s"\n' % (c1.get('Id'), topic, re.sub('"', "", c1.get('Title').encode('ascii','ignore').decode('ascii'))))
-                else:
-                    fout_train.write('"%s"\t"%s"\t"%s"\n' % (c1.get('Id'), topic, re.sub('"', "", c1.get('Title').encode('ascii','ignore').decode('ascii'))))
             except:
                 print c1.get('Id'), topic, c1.get('Title')
 
