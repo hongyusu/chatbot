@@ -41,7 +41,9 @@ def action1(name=None):
         if intent[key] > tmpScore:
             tmpScore = intent[key]
             tmpKey = key
-    res['meanscore'] = key
+    res['meanscore'] = tmpKey
+    print res['meanscore']
+    print sentence
     print res
     return flask.jsonify(res)
     

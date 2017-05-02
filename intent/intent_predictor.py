@@ -28,13 +28,24 @@ from tensorflow.python.ops import control_flow_ops
 tf.python.control_flow_ops = control_flow_ops
 
 w2vBin = '/Users/hongyusu/Data/GoogleNews-vectors-negative300.bin'
+
 datamap = {"3dprinting" : "0", "ai" : "1", "anime" : "2", "arduino" : "3", "astronomy" : "4", "aviation" : "5", "beer" : "6", "chess" : "7", "coffee" : "8", "datascience" : "9", "earthscience" : "10", "economics" : "11", "fitness" : "12", "health" : "13", "law" : "14", "outdoors" : "15", "pets" : "16", "poker" : "17", "robotics" : "18", "sports" : "19", "travel" : "20"}
 datamapname = ["3dprinting", "ai", "anime", "arduino", "astronomy", "aviation", "beer", "chess", "coffee", "datascience", "earthscience", "economics", "fitness", "health", "law", "outdoors", "pets", "poker", "robotics", "sports", "travel"]
 classNum = 21
 
-datamap = {"3dprinting" : "0", "ai" : "1"}
-datamapname = ["3dprinting", "ai"]
-classNum = 2
+datamap = {"coffee" : "0", "ai" : "1", "beer" : "2"}
+datamapname = ["coffee", "ai", "beer"]
+classNum = 3
+
+datamap = {"coffee" : "0", "ai" : "1", "beer" : "2", "sports" : "3", "pets" : "4", "economics" : "5"}
+datamapname = ["coffee", "ai", "beer", "sports", "pets", "economics"]
+classNum = 6
+
+datamap = {"coffee" : "0", "ai" : "1", "beer" : "2", "sports" : "3", "pets" : "4", "economics" : "5", "robotics" : "6", "health" : "7", "law" : "8", "datascience" : "9"}
+datamapname = ["coffee", "ai", "beer", "sports", "pets", "economics", "robotics", "health", "law", "datascience"]
+classNum = 10
+
+
 
 def get_clean_string(string):
     '''
@@ -351,10 +362,10 @@ def learning():
     # save model and weight
     # save model
     model_json = model.to_json()
-    with open("../data/model/stackexchange/model_cnn_intent.json", "w") as json_file:
+    with open("../data/model/stackexchange/model_cnn_intent-%d.json" % classNum, "w") as json_file:
         json_file.write(model_json)
     # save model weight
-    model.save_weights('../data/model/stackexchange/model_cnn_intent.h5')
+    model.save_weights('../data/model/stackexchange/model_cnn_intent-%d.h5' % classNum)
 
     print("Saved model to disk")
 
@@ -404,10 +415,10 @@ def predict_validation():
     '''
     print "validation"
     # load json and create model
-    with open('../data/model/stackexchange/model_cnn_intent.json', 'r') as json_file:
+    with open('../data/model/stackexchange/model_cnn_intent-%d.json' % classNum, 'r') as json_file:
         loaded_model_json = json_file.read()
     model = model_from_json(loaded_model_json)
-    model.load_weights("../data/model/stackexchange/model_cnn_intent.h5")
+    model.load_weights("../data/model/stackexchange/model_cnn_intent-%d.h5" % classNum)
     opt = Adadelta(lr=1.0, rho=0.95, epsilon=1e-6)
     model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
 
@@ -435,10 +446,10 @@ def predict_line(line):
     word_index_map = cPickle.load(open("../data/processed/stackexchange/word-index-map-%d.pickle" % classNum, "rb"))
 
     # load model and parameters from file
-    with open('../data/model/stackexchange/model_cnn_intent.json', 'r') as json_file:
+    with open('../data/model/stackexchange/model_cnn_intent-%d.json' % classNum, 'r') as json_file:
         loaded_model_json = json_file.read()
     model = model_from_json(loaded_model_json)
-    model.load_weights("../data/model/stackexchange/model_cnn_intent.h5")
+    model.load_weights("../data/model/stackexchange/model_cnn_intent-%d.h5" % classNum)
     opt = Adadelta(lr=1.0, rho=0.95, epsilon=1e-6)
     model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
 
@@ -463,10 +474,10 @@ def predict_lines(lines):
     word_index_map = cPickle.load(open("../data/processed/stackexchange/word-index-map-%d.pickle" % classNum, "rb"))
 
     # load model and parameters from file
-    with open('../data/model/stackexchange/model_cnn_intent.json', 'r') as json_file:
+    with open('../data/model/stackexchange/model_cnn_intent-%d.json' % classNum, 'r') as json_file:
         loaded_model_json = json_file.read()
     model = model_from_json(loaded_model_json)
-    model.load_weights("../data/model/stackexchange/model_cnn_intent.h5")
+    model.load_weights("../data/model/stackexchange/model_cnn_intent-%d.h5" % classNum)
     opt = Adadelta(lr=1.0, rho=0.95, epsilon=1e-6)
     model.compile(loss='categorical_crossentropy', optimizer=opt, metrics=['accuracy'])
 
